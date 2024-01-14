@@ -36,6 +36,8 @@ let choosenDate = "";
 function dateValidate() {
     if (choosenDate.getTime() < Date.now()) {
         iziToast.show({
+            position: 'topRight',
+            messageColor: 'white',
             iconUrl: 'error.svg',
             iconColor: 'white',
             color: '#EF4040',
