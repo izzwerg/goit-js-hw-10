@@ -24,32 +24,68 @@ function convertMs(ms) {
 
 const dateField = document.querySelector('#datetime-picker');
 const startButton = document.querySelector('button[data-start]');
-const daysField = document.querySelector('button[data-days]');
-const hoursField = document.querySelector('button[data-hours]');
-const minutesField = document.querySelector('button[data-minutes]');
-const secondsField = document.querySelector('button[data-seconds]');
+const daysField = document.querySelector('span[data-days]');
+const hoursField = document.querySelector('span[data-hours]');
+const minutesField = document.querySelector('span[data-minutes]');
+const secondsField = document.querySelector('span[data-seconds]');
 
 let choosenDate = '';
 
-function startTimer() {
-  dateField.classList.add('is-disable');
-  dateField.setAttribute('disabled', '');
+function normalizeTime(v) {
+  return String(v).padStart(2, '0');
+}
+
+function updateClock({ days, hours, minutes, seconds }) {
+  daysField.textContent = normalizeTime(days);
+  hoursField.textContent = normalizeTime(hours);
+  minutesField.textContent = normalizeTime(minutes);
+  secondsField.textContent = normalizeTime(seconds);
+}
+
+function errMessage() {
+  iziToast.show({
+    position: 'topRight',
+    messageColor: 'white',
+    iconUrl: 'error.svg',
+    iconColor: 'white',
+    color: '#EF4040',
+    message: 'Please choose a date in the future',
+  });
   startButton.removeEventListener('click', startTimer);
   startButton.classList.remove('is-active');
 }
 
+function startTimer() {
+  if (choosenDate.getTime() < Date.now()) {
+    errMessage();
+    return;
+  }
+  dateField.classList.add('is-disable');
+  dateField.setAttribute('disabled', '');
+  startButton.removeEventListener('click', startTimer);
+  startButton.classList.remove('is-active');
+  let intervalID = setInterval(() => {
+    const currentTime = Date.now();
+    const timeLeft = choosenDate.getTime() - currentTime;
+    const time = convertMs(timeLeft);
+    updateClock(time);
+
+    if (
+      time.days < 1 &&
+      time.hours < 1 &&
+      time.minutes < 1 &&
+      time.seconds < 1
+    ) {
+      clearInterval(intervalID);
+      dateField.removeAttribute('disabled');
+      dateField.classList.remove('is-disable');
+    }
+  }, 1000);
+}
+
 function dateValidate() {
   if (choosenDate.getTime() < Date.now()) {
-    iziToast.show({
-      position: 'topRight',
-      messageColor: 'white',
-      iconUrl: 'error.svg',
-      iconColor: 'white',
-      color: '#EF4040',
-      message: 'Please choose a date in the future',
-    });
-    startButton.removeEventListener('click', startTimer);
-    startButton.classList.remove('is-active');
+    errMessage();
   } else {
     startButton.addEventListener('click', startTimer);
     startButton.classList.add('is-active');
