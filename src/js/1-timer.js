@@ -36,7 +36,7 @@ let choosenDate = "";
 function dateValidate() {
     if (choosenDate.getTime() < Date.now()) {
         iziToast.show({
-            iconUrl: '../img/error.svg',
+            iconUrl: '../public/error.svg',
             iconColor: 'white',
             color: '#EF4040',
             message: 'Please choose a date in the future'
