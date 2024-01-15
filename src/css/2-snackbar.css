@@ -98,3 +98,9 @@ button {
 button:hover {
   background: #6c8cff;
 }
+
+input[type="number"]::-webkit-outer-spin-button, 
+input[type="number"]::-webkit-inner-spin-button  {  
+  width: 16px;
+  height: 38px;
+}
